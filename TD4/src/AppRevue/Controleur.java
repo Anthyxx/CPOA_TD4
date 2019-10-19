@@ -36,7 +36,7 @@ public class Controleur {
 	private TextField txt_trf;
 	
 	@FXML
-	private ComboBox<?> cb_per;
+	private ComboBox<Periodicite> cb_per;
 	
 	
 	@FXML
@@ -56,46 +56,44 @@ public class Controleur {
 	}
 	
 	@FXML
-    void creerModele(MouseEvent event) {
-		DAOFactory dao = DAOFactory.getDAOFactory(Persistance.MySQL);
-		ArrayList<Periodicite> ListeP = dao.getPeriodiciteDAO().getAll();
-		Periodicite perio = null;
-        if(verification()) {
-        ListeP.forEach((p)-> {if(p.getLibelle()==cb_per.getValue()) perio = p; });
-        Revue res = new Revue((int)Math.random(), txt_titre.getText(),txt_desc.getText(),Double.valueOf(txt_trf.getText())," ", perio );
-        lbl_nom.setTextFill(Color.BLACK);
-        lbl_nom.setText(txt_titre.getText() + " ( "+txt_trf.getText()+" euros)");
-        dao.getRevueDAO().create(res);
-        }
-    }
-	
-	@FXML 
-    private boolean verification() {
-
-        if (txt_titre.getText().trim().isEmpty()) {
-            lbl_nom.setTextFill(Color.RED);
-            lbl_nom.setText("Le titre doit être renseigné");
-            return false;
-        }
-        if (txt_desc.getText().trim().isEmpty()) {
-            lbl_nom.setTextFill(Color.RED);
-            lbl_nom.setText("Une description doit être renseignée");
-            return false;
-        }
+    void creerModele() {
         try {
-            Double test = Double.valueOf(txt_trf.getText());
-        }
-        catch (Exception e) {
-            lbl_nom.setTextFill(Color.RED);
-            lbl_nom.setText("Le tarif n'est pas valide");
-            return false;
-        }
-        if (cb_per.getValue()==null) {
-            lbl_nom.setTextFill(Color.RED);
-            lbl_nom.setText("Une périodicité doit être renseignée");
-            return false;
-        }
-        return true;
+            float tarif = Float.parseFloat(txt_trf.getText());
+            Revue R = new Revue(txt_titre.getText(), txt_desc.getText(), Integer.parseInt(txt_trf.getText()),
+            txt_titre.getText().concat(".jpg"), cb_per.getValue().getId_periodicite());
+            try {
+                R.setTitre(txt_titre.getText());
+            } catch (IllegalArgumentException e) {
+                this.lbl_nom.setText(e.getMessage());
+                this.lbl_nom.setTextFill(Color.web("red"));
+                return;
+            }
+            try {
+                R.setDescription(txt_desc.getText());
+            }catch (IllegalArgumentException e) {
+                this.lbl_nom.setText(e.getMessage());
+                this.lbl_nom.setTextFill(Color.web("red"));
+                return;
+            }
+            R.setTarif_numero(tarif);
+            int id_periodicite = (cb_per.getValue()).getId_periodicite();
+            R.setId_periodicite(id_periodicite);
+            try {
+                R.setVisuel(txt_titre.getText() + ".jpg");
+            } catch (IllegalArgumentException e) {
+                this.lbl_nom.setText(e.getMessage());
+                this.lbl_nom.setTextFill(Color.web("red"));
+                return;
+            }
+            this.lbl_nom.setText(R.toString());
+            this.lbl_nom.setTextFill(Color.web("black"));
 
+            DAOFactory dao = DAOFactory.getDAOFactory(Persistance.MySQL);
+            dao.getRevueDAO().create(R);
+        }catch (NumberFormatException nfe) {
+            this.lbl_nom.setText("La valeur n'est pas numÃ©rique");
+            this.lbl_nom.setTextFill(Color.web("red"));
+            return;
+        }
     }
 }

@@ -9,18 +9,7 @@ public class Revue {
 	private String visuel;
 	private int id_periodicite;
 	
-	
-	public Revue(int id_revue, String titre, String description, double tarif_numero, String visuel,
-			Periodicite p) {
-		super();
-		this.id_revue = id_revue;
-		this.titre = titre;
-		this.description = description;
-		this.tarif_numero = tarif_numero;
-		this.visuel = visuel;
-		this.id_periodicite = p.getId_periodicite();
-	}
-	
+
 	public Revue(int id_revue, String titre, String description, double tarif_numero, String visuel,
 			int p) {
 		super();
@@ -32,6 +21,17 @@ public class Revue {
 		this.id_periodicite = p;
 	}
 
+
+	public Revue(String titre, String description, double tarif_numero, String visuel,
+			int p) {
+		// TODO Stub du constructeur généré automatiquement
+		super();
+		this.titre = titre;
+		this.description = description;
+		this.tarif_numero = tarif_numero;
+		this.visuel = visuel;
+		this.id_periodicite = p;
+	}
 
 	public int getId_revue() {
 		return id_revue;
